@@ -1,196 +1,138 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
-
-// This array is used to draw the matrix
-char CharMatrixDraw[10] = { '0', '1', '2',
-	'3', '4', '5',
-	'6', '7', '8', '9' };
-
-
-/* 
-These below are the function prototypes 
-(A function prototype in C++ is a declaration that provides the compiler with essential information about a 
-function before its actual definition. )
-*/
-int winner();
-void GameChart(string, string);
-
-
-int main()
-{
-    // I declared the essential variables here
-	int Gamer = 1, i, choice;
-	string name1;
-	string name2;
-
-    // Assigning the names of the gamers
-	cout << "Enter First Gamer Name: ";
-	cin >> name1;
-
-	cout << "\nEnter Second Gamer Name: ";
-	cin >> name2;
-
-    // delcaring the variable to store X and O
-	char mark;
-
-
-    /*
-     The main game loop (do-while loop)
-      a control structure that executes a block of 
-      code at least once and then repeatedly executes it as long as a specified condition is true.
-    */
-	do {
-		GameChart(name1, name2);
-        // This line determines which player's turn it is based on the value of Gamer
-		Gamer = (Gamer % 2) ? 1 : 2;
-
-		if (Gamer == 1)
-		{
-			cout << name1 << " Your Turn, Enter a Number:  ";
-			cin >> choice;
-		}
-		else
-		{
-			cout << name2 << " Your Turn, Enter a Number:  ";
-			cin >> choice;
-		}
-
-
-        // This line assigns the appropriate mark ('X' or 'O') based on the current player
-		mark = (Gamer == 1) ? 'X' : 'O';
-
-         // This series of if-else statements checks the player's choice and updates the game board accordingly
-		if (choice == 1 && CharMatrixDraw[1] == '1')
-
-			CharMatrixDraw[1] = mark;
-		else if (choice == 2 && CharMatrixDraw[2] == '2')
-
-			CharMatrixDraw[2] = mark;
-		else if (choice == 3 && CharMatrixDraw[3] == '3')
-
-			CharMatrixDraw[3] = mark;
-		else if (choice == 4 && CharMatrixDraw[4] == '4')
-
-			CharMatrixDraw[4] = mark;
-		else if (choice == 5 && CharMatrixDraw[5] == '5')
-
-			CharMatrixDraw[5] = mark;
-		else if (choice == 6 && CharMatrixDraw[6] == '6')
-
-			CharMatrixDraw[6] = mark;
-		else if (choice == 7 && CharMatrixDraw[7] == '7')
-
-			CharMatrixDraw[7] = mark;
-		else if (choice == 8 && CharMatrixDraw[8] == '8')
-
-			CharMatrixDraw[8] = mark;
-		else if (choice == 9 && CharMatrixDraw[9] == '9')
-
-			CharMatrixDraw[9] = mark;
-		else
-		{
-			cout << "\nInvalid Choice Try Again ";
-			Gamer--;
-			cin.ignore();
-			cin.get();
-		}
-
-     // This line calls the winner function to check if there's a winner or if the game is a draw
-		i = winner();
-     // Incrementing the Gamer variable to switch turns between players
-		Gamer++;
-	} while (i == -1);
-	GameChart(name1, name2);
-
-    // This series of if-else statements checks if there's a winner or if the game is a draw
-	if (i == 1)
-	{
-		cout << "\n=============================\n";
-		cout << "\a" << name1 << " Is A Winner \n";
-		cout << "=============================\n";
-	}
-	else
-	{
-		cout << "\n=============================\n";
-		cout << "\aGame Is Draw\n";
-		cout << "=============================\n";
-	}
-
-	cin.ignore();
-	cin.get();
-	return 0;
-}
-
-
-
 /*
-this function checks for a winner or a draw, evaluates the game if there are 3 same marks in a row, column, or diagonal
-and returns 1 if there's a winner, 0 if it's a draw, and -1 if the game should continue.
-*/ 
-int winner()
-{
-	if (CharMatrixDraw[1] == CharMatrixDraw[2] && CharMatrixDraw[2] == CharMatrixDraw[3])
+I improved my Tic Tac Toe game
+replaced arrays with vectors
+added input validation
+cleared the console for better UX
+used constants for board size
+used C++17 standard
+added comments for clarity
+*/
 
-		return 1;
-	else if (CharMatrixDraw[4] == CharMatrixDraw[5] && CharMatrixDraw[5] == CharMatrixDraw[6])
+const int BOARD_SIZE = 9;
+vector<char> board(BOARD_SIZE + 1); // index from 1 to 9
 
-		return 1;
-	else if (CharMatrixDraw[7] == CharMatrixDraw[8] && CharMatrixDraw[8] == CharMatrixDraw[9])
+// prototypes
+void initializeBoard();
+void printBoard(const string& player1, const string& player2);
+bool makeMove(int choice, char mark);
+int checkWinner();
 
-		return 1;
-	else if (CharMatrixDraw[1] == CharMatrixDraw[4] && CharMatrixDraw[4] == CharMatrixDraw[7])
+int main() {
+	// strings variables for player names in the same line
+    string player1, player2;
+    cout << "Enter First Gamer Name: ";
+    cin >> player1;
 
-		return 1;
-	else if (CharMatrixDraw[2] == CharMatrixDraw[5] && CharMatrixDraw[5] == CharMatrixDraw[8])
+    cout << "\nEnter Second Gamer Name: ";
+    cin >> player2;
 
-		return 1;
-	else if (CharMatrixDraw[3] == CharMatrixDraw[6] && CharMatrixDraw[6] == CharMatrixDraw[9])
+	// initialize the board
+    initializeBoard();
 
-		return 1;
-	else if (CharMatrixDraw[1] == CharMatrixDraw[5] && CharMatrixDraw[5] == CharMatrixDraw[9])
+	// game loop variables as integers in the global scope
+    int currentPlayer = 1;
+    int gameState = -1;
 
-		return 1;
-	else if (CharMatrixDraw[3] == CharMatrixDraw[5] && CharMatrixDraw[5] == CharMatrixDraw[7])
+    do {
+        printBoard(player1, player2);
+        int choice;
+        char mark = (currentPlayer == 1) ? 'X' : 'O';
+        string playerName = (currentPlayer == 1) ? player1 : player2;
 
-		return 1;
-	else if (CharMatrixDraw[1] != '1' && CharMatrixDraw[2] != '2' && CharMatrixDraw[3] != '3' &&
-		CharMatrixDraw[4] != '4' && CharMatrixDraw[5] != '5' && CharMatrixDraw[6] != '6' &&
-		CharMatrixDraw[7] != '7' && CharMatrixDraw[8] != '8' && CharMatrixDraw[9] != '9')
+        cout << playerName << " (" << mark << ") Your Turn, Enter a Number: ";
+        cin >> choice;
 
-		return 0;
-	else
-		return -1;
+        if (!makeMove(choice, mark)) {
+            cout << "Invalid move, try again.\n";
+            continue; // dot not switch player if move is invalid
+        }
+
+
+        gameState = checkWinner();
+        currentPlayer = (currentPlayer == 1) ? 2 : 1;
+
+    } while (gameState == -1);
+
+    printBoard(player1, player2);
+
+    cout << "\n=============================\n";
+    if (gameState == 1) {
+        string winnerName = (currentPlayer == 1) ? player2 : player1;
+        cout << "\a" << winnerName << " Is The Winner!\n";
+    } else {
+        cout << "\aGame is a Draw!\n";
+    }
+    cout << "=============================\n";
+
+    return 0;
 }
 
+// initialize the board with the numbers using a for loop sentence
+void initializeBoard() {
+    for (int i = 1; i <= BOARD_SIZE; i++) {
+        board[i] = '0' + i;
+    }
+}
 
-// This function displays the game board
-void GameChart(string name1, string name2)
-{
-    // This line clears the console screen (works on Windows)
-	system("cls");
+//prints the board and clears the console for better UX using system("clear") or system("cls") depending on the OS
+void printBoard(const string& player1, const string& player2) {
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
 
-	cout << "\n==========================";
-	cout << "\n\tTic Tac Toe\n";
-	cout << "\n==========================\n";
+    cout << "\n==========================";
+    cout << "\n\tTic Tac Toe\n";
+    cout << "\n==========================\n";
 
-	string nam1 = name1;
-	string nam2 = name2;
+    cout << player1 << " (X) ======== " << player2 << " (O)\n\n";
 
-	cout << nam1 << "(X)" << "========" << nam2 << " (0)\n\n";
+	// now print the board using a for loop
+    for (int i = 1; i <= BOARD_SIZE; i += 3) {
+        cout << "     ||     ||     " << endl;
+        cout << "  " << board[i] << "  ||  " << board[i + 1] << "  ||  " << board[i + 2] << endl;
+        if (i < 7) {
+            cout << "=====||=====||=====" << endl;
+        }
+    }
+    cout << "     ||     ||     " << endl << endl;
+}
 
-	cout << "     ||     ||     " << endl;
-	cout << "  " << CharMatrixDraw[1] << "  ||  " << CharMatrixDraw[2] << "  ||  " << CharMatrixDraw[3] << endl;
+//Make a move, returns true if valid
+bool makeMove(int choice, char mark) {
+    if (choice >= 1 && choice <= BOARD_SIZE && board[choice] == ('0' + choice)) {
+        board[choice] = mark;
+        return true;
+    }
+    return false;
+}
 
-	cout << "=====||=====||=====" << endl;
-	cout << "     ||     ||     " << endl;
+// Verifica si hay un ganador o empate / Verify if there's a winner or a draw (the checker function of the game)
+int checkWinner() {
+    //winning combinations using a 2D array
+    const int wins[8][3] = {
+        {1, 2, 3}, {4, 5, 6}, {7, 8, 9},
+        {1, 4, 7}, {2, 5, 8}, {3, 6, 9}, 
+        {1, 5, 9}, {3, 5, 7}            
+    };
 
-	cout << "  " << CharMatrixDraw[4] << "  ||  " << CharMatrixDraw[5] << "  ||  " << CharMatrixDraw[6] << endl;
+	// check for a winner with a range-based for loop (also known as for-each loop)
+    for (auto& win : wins) {
+        if (board[win[0]] == board[win[1]] && board[win[1]] == board[win[2]]) {
+            return 1; //there's a winner
+        }
+    }
 
-	cout << "=====||=====||=====" << endl;
-	cout << "     ||     ||     " << endl;
-
-	cout << "  " << CharMatrixDraw[7] << "  ||  " << CharMatrixDraw[8] << "  ||  " << CharMatrixDraw[9] << endl;
-
-	cout << "     ||     ||     " << endl << endl;
+    // check for a draw
+    for (int i = 1; i <= BOARD_SIZE; i++) {
+        if (board[i] == ('0' + i)) {
+            return -1; //there are moves left
+        }
+    }
+    return 0; //it's a draw
 }
