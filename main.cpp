@@ -112,7 +112,7 @@ bool makeMove(int choice, char mark) {
     return false;
 }
 
-// Verifica si hay un ganador o empate / Verify if there's a winner or a draw (the checker function of the game)
+//Verify if there's a winner or a draw (the checker function of the game)
 int checkWinner() {
     //winning combinations using a 2D array
     const int wins[8][3] = {
